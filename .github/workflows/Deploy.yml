@@ -1,36 +1,41 @@
-# Definie o nome da pipeline
 name: CI Barbearia Alura
-
-# Evento que vai disparar o Job
-on:
+'on':
   push:
     branches:
       - main
-  workflow_dispatch:
-
+  workflow_dispatch: null
 jobs:
-
-#-------------------------------------------------------------------------------#
-#-------------------------------------------------------------------------------#
-# Deploy em Homologação (Heroku)                                                #
-#-------------------------------------------------------------------------------#
-#-------------------------------------------------------------------------------#
   job1:
-    name: Deploy Heroku
+    name: Unit Tests
     runs-on: ubuntu-latest
-    environment:
-      name: 'staging'
-
     steps:
-      # Check out repository
+      - uses: actions/checkout@v2
+      - name: Set up Python version
+        uses: actions/setup-python@v1
+        with:
+          python-version: latest
+      - name: Create and start virtual environment
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install flask 
+      - name: Upload artifact for deployment jobs
+        uses: actions/upload-artifact@v2
+        with:
+          name: python-app
+          path: |
+            . 
+            !venv/
       - name: Check out repository
         uses: actions/checkout@v2
-
-      # Deploy Heroku    
       - name: Deploy to Heroku
         uses: akhileshns/heroku-deploy@v3.12.12
         with:
-          heroku_api_key: ${{secrets.HEROKU_DEPLOY}}
-          heroku_app_name: "devops-barbeariaalura"
-          heroku_email: "fernandorberto@gmail.com"
-          procfile: "web: gunicorn app:app"
+          heroku_api_key: '${{secrets.HEROKU_DEPLOY}}'
+          heroku_app_name: devops-barbeariaalura
+          heroku_email: fernandorberto@gmail.com
+          procfile: 'web: gunicorn app:app'
