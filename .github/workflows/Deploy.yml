@@ -13,7 +13,7 @@ jobs:
       - name: Set up Python version
         uses: actions/setup-python@v1
         with:
-          python-version: 3.9.4 (x64)
+          python-version: '3.9.4'
       - name: Create and start virtual environment
         run: |
           python -m venv venv
