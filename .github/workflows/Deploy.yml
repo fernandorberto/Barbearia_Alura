@@ -6,14 +6,14 @@ name: CI Barbearia Alura
   workflow_dispatch: null
 jobs:
   job1:
-    name: Unit Tests
+    name: Deploy
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python version
         uses: actions/setup-python@v1
         with:
-          python-version: latest
+          python-version: 3.9.4 (x64)
       - name: Create and start virtual environment
         run: |
           python -m venv venv
