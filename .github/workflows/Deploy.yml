@@ -76,15 +76,14 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
 
-###-- END Job2 ---###
+###-- FIM JOB 2 ---###
 
-#-------------------------------------------------------------------------------#
 #-------------------------------------------------------------------------------#
 # Deploy em Homologação (Heroku)                                                #
 #-------------------------------------------------------------------------------#
-#-------------------------------------------------------------------------------#
+
   job3:
-    name: Staging Deploy
+    name: Deploy em Homologação
     runs-on: ubuntu-latest
     needs: [job1, job2]
     environment:
@@ -104,32 +103,31 @@ jobs:
           heroku_email: "fernandorberto@gmail.com"
           procfile: "web: gunicorn app:app"
 
-###-- END Job3 ---###
+###-- FIM JOB 3 ---###
 
 #-------------------------------------------------------------------------------#
+# Teste em Homologação                                                        #
 #-------------------------------------------------------------------------------#
-# Testing em Homologação                                                        #
-#-------------------------------------------------------------------------------#
-#-------------------------------------------------------------------------------# 
+ 
   job4:
-    name: Staging Test
+    name: Teste em Homologacao
     runs-on: ubuntu-latest
     needs: job3
     steps:
-    # curl na rota /. Method GET na URL de homologação
+    # curl na rota /
     - name: curl /
       uses: wei/curl@master
       with:
         args: -I https://devopslab-fernando-qa.herokuapp.com
 
-###-- END Job4 ---###
+###-- FIM JOB 4 ---###
 
 #-------------------------------------------------------------------------------#
 #                           DEPLOY EM PROD                                      #
 #-------------------------------------------------------------------------------#
 
   job5:
-    name: Deploy
+    name: Deploy em Producao
     runs-on: ubuntu-latest
     needs: job4
     steps:
@@ -163,3 +161,18 @@ jobs:
           heroku_app_name: 'devops-barbeariaalura'
           heroku_email: 'fernandorberto@gmail.com'
           procfile: 'web: gunicorn app:app'
+
+#-------------------------------------------------------------------------------#
+# Teste em Produção                                                     #
+#-------------------------------------------------------------------------------#
+ 
+  job4:
+    name: Teste em Producao
+    runs-on: ubuntu-latest
+    needs: job3
+    steps:
+    # curl na rota /
+    - name: curl /
+      uses: wei/curl@master
+      with:
+        args: -I https://devops-barbeariaalura.herokuapp.com
