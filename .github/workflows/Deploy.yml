@@ -166,10 +166,10 @@ jobs:
 # Teste em Produção                                                     #
 #-------------------------------------------------------------------------------#
  
-  job4:
+  job6:
     name: Teste em Producao
     runs-on: ubuntu-latest
-    needs: job3
+    needs: job5
     steps:
     # curl na rota /
     - name: curl /
