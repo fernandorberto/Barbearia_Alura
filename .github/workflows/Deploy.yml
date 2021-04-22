@@ -1,13 +1,136 @@
-name: CI Barbearia Alura
+name: CI/CD BARBEARIA ALURA
 'on':
   push:
     branches:
       - main
   workflow_dispatch: null
 jobs:
+
+#-------------------------------------------------------------------------------#
+#                           TESTE UNITARIOS                                     #
+#-------------------------------------------------------------------------------#
+###-- INICIO JOB 1 ---###
+
   job1:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+
+    # REALIZA CHECKOUT NO CODIGO FONTE DO GIT
+    steps:
+    - uses: actions/checkout@v2
+
+    # INSTALA PYTHON
+    - name: Set up Python version
+      uses: actions/setup-python@v1
+      with:
+        python-version: '3.9'
+
+    # CRIA VIRTUAL ENV DO PYTHON
+    - name: Create and start virtual environment
+      run: |
+        python -m venv venv
+        source venv/bin/activate
+
+    # INSTALA MODULOS NECESSARIOS PARA RODAR A APP 
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        
+    # EXECUTA OS SCRIPTS DE TESTES
+    - name: Execute tests
+      run: |
+        pip install pytest
+        pip install pytest-cov
+        pip install coverage
+        coverage run test_core.py 
+        coverage report app.py
+        coverage xml app.py
+      
+    # CHECK IN CODIGO FONTE
+    - name: Upload artifact for deployment jobs
+      uses: actions/upload-artifact@v2
+      with:
+        name: python-app
+        path: |
+          . 
+          !venv/
+
+###-- FIM JOB 1 ---###
+
+#-------------------------------------------------------------------------------#
+# Teste de Qualidade SonarCloud                                                 #
+#-------------------------------------------------------------------------------#
+
+  job2:
+    name: Quality Test SonarCloud
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+###-- END Job2 ---###
+
+#-------------------------------------------------------------------------------#
+#-------------------------------------------------------------------------------#
+# Deploy em Homologação (Heroku)                                                #
+#-------------------------------------------------------------------------------#
+#-------------------------------------------------------------------------------#
+  job3:
+    name: Staging Deploy
+    runs-on: ubuntu-latest
+    needs: [job1, job2]
+    environment:
+      name: 'staging.HOM'
+
+    steps:
+      # Check out repository
+      - name: Check out repository
+        uses: actions/checkout@v2
+
+      # Deploy Heroku    
+      - name: Deploy to Heroku
+        uses: akhileshns/heroku-deploy@v3.12.12
+        with:
+          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+          heroku_app_name: "devopslab-fernando-qa"
+          heroku_email: "fernandorberto@gmail.com"
+          procfile: "web: gunicorn app:app"
+
+###-- END Job3 ---###
+
+#-------------------------------------------------------------------------------#
+#-------------------------------------------------------------------------------#
+# Testing em Homologação                                                        #
+#-------------------------------------------------------------------------------#
+#-------------------------------------------------------------------------------# 
+  job4:
+    name: Staging Test
+    runs-on: ubuntu-latest
+    needs: job3
+    steps:
+    # curl na rota /. Method GET na URL de homologação
+    - name: curl /
+      uses: wei/curl@master
+      with:
+        args: -I https://devopslab-fernando-qa.herokuapp.com
+
+###-- END Job4 ---###
+
+#-------------------------------------------------------------------------------#
+#                           DEPLOY EM PROD                                      #
+#-------------------------------------------------------------------------------#
+
+  job5:
     name: Deploy
     runs-on: ubuntu-latest
+    needs: job4
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python version
