@@ -1,0 +1,36 @@
+# Definie o nome da pipeline
+name: CI Barbearia Alura
+
+# Evento que vai disparar o Job
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+
+#-------------------------------------------------------------------------------#
+#-------------------------------------------------------------------------------#
+# Deploy em Homologação (Heroku)                                                #
+#-------------------------------------------------------------------------------#
+#-------------------------------------------------------------------------------#
+  job1:
+    name: Deploy Heroku
+    runs-on: ubuntu-latest
+    environment:
+      name: 'staging'
+
+    steps:
+      # Check out repository
+      - name: Check out repository
+        uses: actions/checkout@v2
+
+      # Deploy Heroku    
+      - name: Deploy to Heroku
+        uses: akhileshns/heroku-deploy@v3.12.12
+        with:
+          heroku_api_key: ${{secrets.HEROKU_DEPLOY}}
+          heroku_app_name: "devops-barbeariaalura"
+          heroku_email: "fernandorberto@gmail.com"
+          procfile: "web: gunicorn app:app"
