@@ -31,7 +31,7 @@
         <section class="principal">
             <h2 class="titulo-principal">Sobre a Barbearia Alura</h2>
 
-            <img class="utensilios" src="{{ url_for('static', filename='utensilios.png') }}"
+            <img class="utensilios" src="{{ url_for('static', filename='utensilios.jpg') }}"
                 alt="utensilios de um barbeiro">
 
             <p>Localizada no coração da cidade a <strong>Barbearia Alura</strong> traz para o mercado o que há de melhor
@@ -67,7 +67,8 @@
                     <li class="itens">Profissionais Qualificados</li>
                     <li class="itens">Pontualidade</li>
                     <li class="itens">Limpeza</li>
-                </ul><img class="img-beneficios" src="beneficios.jpg" class="imagembeneficios">
+                </ul><img class="img-beneficios" src="{{ url_for('static', filename='beneficios.jpg') }}"
+                    class="imagembeneficios">
             </div>
             <div class="video">
                 <iframe width="560" height="315" src="https://www.youtube.com/embed/gjs2nVppdHo"
