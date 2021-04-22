@@ -35,7 +35,7 @@ jobs:
       - name: Deploy to Heroku
         uses: akhileshns/heroku-deploy@v3.12.12
         with:
-          heroku_api_key: '${{secrets.HEROKU_DEPLOY}}'
-          heroku_app_name: devops-barbeariaalura
-          heroku_email: fernandorberto@gmail.com
+          heroku_api_key: '${{secrets.HEROKU_API_KEY}}'
+          heroku_app_name: 'devops-barbeariaalura'
+          heroku_email: 'fernandorberto@gmail.com'
           procfile: 'web: gunicorn app:app'
